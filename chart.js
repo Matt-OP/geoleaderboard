@@ -9,9 +9,9 @@ fetch("leaderboard.csv")
 
 function processData(data) {
     const divisionColors = {};
-    divisionColors["Champion"] = `rgb(0,255,255)`
-    divisionColors["Master I"] = `rgb(255,0,255)`
-    divisionColors["Master II"] = `rgb(100,0,100)`
+    divisionColors["Champion"] = `rgb(77,18,154)`
+    divisionColors["Master I"] = `rgb(180,40,118)`
+    divisionColors["Master II"] = `rgb(138,79,110)`
     divisionColors["Gold I"] = `rgb(255,255,0)`
     divisionColors["Gold II"] = `rgb(120,120,0)`
     divisionColors["Gold III"] = `rgb(80,80,0)`
@@ -71,19 +71,23 @@ function drawChart(labels, datasets) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {position: "top"},
+                legend: { 
+                    position: "top", 
+                    labels: { 
+                        color: 'white'
+                    } 
+                }
             },
             scales: {
                 x: {
                     title: {
                         display: true,
-                        text: "Rating"
+                        text: "Rating",
+                        color: 'white'
                     },
                     stacked: true,
                     ticks: {
-                        autoSkip: true,
-                        maxRotation: 0,
-                        minRotation: 0,
+                        color: 'white',
                         callback: function(value, index) {
                             const minRating = this.getLabelForValue(value).split("-")[0];
                             return minRating % 100 === 0 ? minRating : null;
@@ -94,7 +98,11 @@ function drawChart(labels, datasets) {
                     stacked: true,
                     title: {
                         display: true,
-                        text: "Number of Players"
+                        text: "Number of Players",
+                        color: 'white'
+                    },
+                    ticks: {
+                        color: 'white'
                     }
                 }
             },
@@ -105,3 +113,5 @@ function drawChart(labels, datasets) {
         }
     });
 }
+
+
