@@ -81,21 +81,21 @@ function displayProfile(user, allData) {
 
     if (user.gameModeRatingsStandardduels && !isNaN(user.gameModeRatingsStandardduels)) {
         const movingEmoji = addRankEmoji(lbPositionMovingDuels);
-        leaderboardContent += `<div class="leaderboard-line">${movingEmoji}&nbsp;Moving:&nbsp;<span class="highlight">${user.gameModeRatingsStandardduels}</span>&nbsp;
+        leaderboardContent += `<div class="leaderboard-line">${movingEmoji}&nbsp;Moving:&nbsp;<span class="highlight">${Number(user.gameModeRatingsStandardduels)}</span>&nbsp;
         (Rank&nbsp;<span class="highlight">${lbPositionMovingDuels}</span>&nbsp;of&nbsp;${movingDuelsRatings.length})&nbsp;
         Top&nbsp;${(lbPositionMovingDuels / movingDuelsRatings.length * 100).toFixed(2)}%<br></div>`;
     }
     
     if (user.gameModeRatingsNomoveduels && !isNaN(user.gameModeRatingsNomoveduels)) {
         const noMoveEmoji = addRankEmoji(lbPositionNoMoveDuels);
-        leaderboardContent += `<div class="leaderboard-line">${noMoveEmoji}&nbsp;No Move:&nbsp;<span class="highlight">${user.gameModeRatingsNomoveduels}</span>&nbsp;
+        leaderboardContent += `<div class="leaderboard-line">${noMoveEmoji}&nbsp;No Move:&nbsp;<span class="highlight">${Number(user.gameModeRatingsNomoveduels)}</span>&nbsp;
         (Rank&nbsp;<span class="highlight">${lbPositionNoMoveDuels}</span>&nbsp;of&nbsp;${noMoveDuelsRatings.length})&nbsp;
         Top&nbsp;${(lbPositionNoMoveDuels / noMoveDuelsRatings.length * 100).toFixed(2)}%<br></div>`;
     }
     
     if (user.gameModeRatingsNmpzduels && !isNaN(user.gameModeRatingsNmpzduels)) {
         const nmpzEmoji = addRankEmoji(lbPositionNmpzDuels);
-        leaderboardContent += `<div class="leaderboard-line">${nmpzEmoji}&nbsp;NMPZ:&nbsp;<span class="highlight">${user.gameModeRatingsNmpzduels}</span>&nbsp;
+        leaderboardContent += `<div class="leaderboard-line">${nmpzEmoji}&nbsp;NMPZ:&nbsp;<span class="highlight">${Number(user.gameModeRatingsNmpzduels)}</span>&nbsp;
         (Rank&nbsp;<span class="highlight">${lbPositionNmpzDuels}</span>&nbsp;of&nbsp;${nmpzDuelsRatings.length})&nbsp;
         Top&nbsp;${(lbPositionNmpzDuels / nmpzDuelsRatings.length * 100).toFixed(2)}%<br></div>`;
     }
