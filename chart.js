@@ -1,6 +1,6 @@
 const binSize = 10;
 
-fetch("leaderboard.csv")
+fetch("https://media.githubusercontent.com/media/Matt-OP/geoleaderboard/refs/heads/main/leaderboard.csv")
     .then(response => response.text())
     .then(csvText => {
         const data = Papa.parse(csvText, {header: true}).data;

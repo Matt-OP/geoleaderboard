@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function fetchCSVData(username, userId) {
-    Papa.parse('leaderboard.csv', {
+    Papa.parse('https://media.githubusercontent.com/media/Matt-OP/geoleaderboard/refs/heads/main/leaderboard.csv', {
         download: true,
         header: true,
         complete: function(results) {
