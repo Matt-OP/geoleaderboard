@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loading) return;
         loading = true;
     
-        fetch('leaderboard.csv')
+        fetch('https://media.githubusercontent.com/media/Matt-OP/geoleaderboard/refs/heads/main/leaderboard.csv')
             .then(response => response.text())
             .then(data => {
                 Papa.parse(data, {
