@@ -51,23 +51,27 @@ function displayProfile(user, allData) {
     
     const lbPositionCountry = getPosition(user, countryPlayers);
 
-    function filterGamemodeData(data, column) {
+    function filterData(data, column) {
         return data
             .filter(row => row[column] !== undefined && !isNaN(parseFloat(row[column])))
             .sort((a, b) => b[column] - a[column]);
     }
 
-    const movingDuelsRatings = filterGamemodeData(allData, "gameModeRatingsStandardduels");
-    const noMoveDuelsRatings = filterGamemodeData(allData, "gameModeRatingsNomoveduels");
-    const nmpzDuelsRatings = filterGamemodeData(allData, "gameModeRatingsNmpzduels");
+    const movingDuelsRatings = filterData(allData, "gameModeRatingsStandardduels");
+    const noMoveDuelsRatings = filterData(allData, "gameModeRatingsNomoveduels");
+    const nmpzDuelsRatings = filterData(allData, "gameModeRatingsNmpzduels");
 
-    function getGameModePosition(user, data) {
+    const guessedFirstRateData = filterData(allData, "guessedFirstRate");
+
+    function getPosition(user, data) {
         return data.findIndex(row => row.nick === user.nick) + 1;
     }
 
-    const lbPositionMovingDuels = getGameModePosition(user, movingDuelsRatings);
-    const lbPositionNoMoveDuels = getGameModePosition(user, noMoveDuelsRatings);
-    const lbPositionNmpzDuels = getGameModePosition(user, nmpzDuelsRatings);
+    const lbPositionMovingDuels = getPosition(user, movingDuelsRatings);
+    const lbPositionNoMoveDuels = getPosition(user, noMoveDuelsRatings);
+    const lbPositionNmpzDuels = getPosition(user, nmpzDuelsRatings);
+
+    const lbPositionGuessedFirstRate = getPosition(user, guessedFirstRateData);
 
     // display gamemode specific ratings
     let leaderboardContent = '<div class="leaderboard-line">⭐&nbsp;Gamemode&nbsp;Specific&nbsp;Ratings&nbsp;⭐<br></div>';
@@ -79,48 +83,67 @@ function displayProfile(user, allData) {
         return '';
     }
 
+    function addWinStreakEmoji(winStreak) {
+        if (winStreak < 3) return '';
+        const emojiCount = Math.floor(winStreak / 3);
+        return '🔥'.repeat(emojiCount);
+    }
+
     if (user.gameModeRatingsStandardduels && !isNaN(user.gameModeRatingsStandardduels)) {
         const movingEmoji = addRankEmoji(lbPositionMovingDuels);
         leaderboardContent += `<div class="leaderboard-line">${movingEmoji}&nbsp;Moving:&nbsp;<span class="highlight">${Number(user.gameModeRatingsStandardduels)}</span>&nbsp;
         (Rank&nbsp;<span class="highlight">${lbPositionMovingDuels}</span>&nbsp;of&nbsp;${movingDuelsRatings.length})&nbsp;
-        Top&nbsp;${(lbPositionMovingDuels / movingDuelsRatings.length * 100).toFixed(2)}%<br></div>`;
+        Top&nbsp;<span class="highlight">${(lbPositionMovingDuels / movingDuelsRatings.length * 100).toFixed(2)}%</span><br></div>`;
     }
     
     if (user.gameModeRatingsNomoveduels && !isNaN(user.gameModeRatingsNomoveduels)) {
         const noMoveEmoji = addRankEmoji(lbPositionNoMoveDuels);
         leaderboardContent += `<div class="leaderboard-line">${noMoveEmoji}&nbsp;No Move:&nbsp;<span class="highlight">${Number(user.gameModeRatingsNomoveduels)}</span>&nbsp;
         (Rank&nbsp;<span class="highlight">${lbPositionNoMoveDuels}</span>&nbsp;of&nbsp;${noMoveDuelsRatings.length})&nbsp;
-        Top&nbsp;${(lbPositionNoMoveDuels / noMoveDuelsRatings.length * 100).toFixed(2)}%<br></div>`;
+        Top&nbsp;<span class="highlight">${(lbPositionNoMoveDuels / noMoveDuelsRatings.length * 100).toFixed(2)}%</span><br></div>`;
     }
     
     if (user.gameModeRatingsNmpzduels && !isNaN(user.gameModeRatingsNmpzduels)) {
         const nmpzEmoji = addRankEmoji(lbPositionNmpzDuels);
         leaderboardContent += `<div class="leaderboard-line">${nmpzEmoji}&nbsp;NMPZ:&nbsp;<span class="highlight">${Number(user.gameModeRatingsNmpzduels)}</span>&nbsp;
         (Rank&nbsp;<span class="highlight">${lbPositionNmpzDuels}</span>&nbsp;of&nbsp;${nmpzDuelsRatings.length})&nbsp;
-        Top&nbsp;${(lbPositionNmpzDuels / nmpzDuelsRatings.length * 100).toFixed(2)}%<br></div>`;
+        Top&nbsp<span class="highlight">${(lbPositionNmpzDuels / nmpzDuelsRatings.length * 100).toFixed(2)}%</span><br></div>`;
     }
     
     if (!leaderboardContent.includes("highlight")) {leaderboardContent += `No ratings to display`;}
 
     const globalEmoji = addRankEmoji(Number(user.positionDuelsLeaderboard));
     const countryEmoji = addRankEmoji(lbPositionCountry);
+    const winStreakEmoji = addWinStreakEmoji(user.winStreak);
 
     // documents
     document.title = `${user.nick} Profile`
     document.getElementById('username').textContent = `${user.nick}`;
-    document.getElementById('userInfo').innerHTML = `
+    document.getElementById('userLevelAndCreationDate').innerHTML = `
     <span class="highlight">(${user.lifeTimeXpProgressionCurrenttitleName}, Level ${user.lifeTimeXpProgressionCurrentlevelLevel})</span><br>
-    Number of perfect rounds: <span class="highlight">${user.perfectRounds}</span><br>
-    Account created: ${user.created}
+    Account created: ${user.created}<br>
     `;
+
+    document.getElementById('userInfo').innerHTML = `
+    ⭐&nbsp;Total Duel Statistics&nbsp;⭐<br><br>
+    Games played: <span class="highlight">${user.duelsTotalNumgamesplayed}</span><br>
+    Win percentage: <span class="highlight">${user.duelsTotalWinratio}%</span><br>
+    Flawless wins: <span class="highlight">${user.duelsTotalNumflawlesswins}</span> (<span class="highlight">${(user.duelsTotalNumflawlesswins / user.duelsTotalNumgamesplayed * 100).toFixed(2)}%</span> of games)<br><br>
+    Number of guesses: <span class="highlight">${user.duelsTotalNumguesses}</span><br>
+    Number of 5Ks: <span class="highlight">${user.perfectRounds}</span> (<span class="highlight">${(user.perfectRounds / user.duelsTotalNumguesses * 100).toFixed(2)}%</span> of rounds)<br><br>
+    Guessed first rate: <span class="highlight">${(user.guessedFirstRate * 100).toFixed(2)}%</span> (Faster than <span class="highlight">${((lbPositionGuessedFirstRate * 100 / allData.length - 1 * 100) * -1).toFixed(2)}%</span>)<br>
+    Current win streak: <span class="highlight">${user.winStreak}&nbsp;${winStreakEmoji}</span><br>
+    `;
+
     document.getElementById('geoguessrProfile').innerHTML = `<a href="https://www.geoguessr.com/${user.url}" target="_blank">Geoguessr Profile</a>`;
     document.getElementById('profileImage').src = `./geoguessr_profile_pictures/${user.pinUrl.replace(/^pin\//, '')}`;
     document.getElementById('divisionImage').src = `./division_icons/${user.divisionName}.webp`;
     document.getElementById('leaderboardPosition').innerHTML = `
-        <div class="leaderboard-line">${globalEmoji}&nbsp;Rating:&nbsp;<span class="highlight">${user.rating}</span>&nbsp;(${user.divisionName})</div>
-        <div class="leaderboard-line">${globalEmoji}&nbsp;Global Rank&nbsp;<span class="highlight">${user.positionDuelsLeaderboard}</span>&nbsp;of&nbsp;${allData.length - 1}</div>
+        <div class="leaderboard-line">${globalEmoji}&nbsp;Rating:&nbsp;<span class="highlight">${Number(user.rating)}</span>&nbsp;(${user.divisionName})</div>
+        <div class="leaderboard-line">${globalEmoji}&nbsp;Global Rank&nbsp;<span class="highlight">${Number(user.positionDuelsLeaderboard)}</span>&nbsp;of&nbsp;${allData.length - 1}</div>
         <div class="leaderboard-line">${countryEmoji}&nbsp;Rank&nbsp;<span class="highlight">${lbPositionCountry}</span>&nbsp;of&nbsp;${countryPlayers.length}&nbsp;(${user.countryCode})</div>
     `;
+
     document.getElementById('leaderboardGamemodePosition').innerHTML = leaderboardContent;
 
     // more data subsets
