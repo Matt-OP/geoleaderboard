@@ -130,9 +130,9 @@ function displayProfile(user, allData) {
     Win percentage: <span class="highlight">${user.duelsTotalWinratio}%</span><br>
     Flawless wins: <span class="highlight">${user.duelsTotalNumflawlesswins}</span> (<span class="highlight">${(user.duelsTotalNumflawlesswins / user.duelsTotalNumgamesplayed * 100).toFixed(2)}%</span> of games)<br><br>
     Number of guesses: <span class="highlight">${user.duelsTotalNumguesses}</span><br>
-    Number of 5Ks: <span class="highlight">${user.perfectRounds}</span> (<span class="highlight">${(user.perfectRounds / user.duelsTotalNumguesses * 100).toFixed(2)}%</span> of rounds)<br><br>
+    Number of perfect rounds: <span class="highlight">${user.perfectRounds}</span> (<span class="highlight">${(user.perfectRounds / user.duelsTotalNumguesses * 100).toFixed(2)}%</span> of rounds)<br><br>
     Guessed first rate: <span class="highlight">${(user.guessedFirstRate * 100).toFixed(2)}%</span> (Faster than <span class="highlight">${((lbPositionGuessedFirstRate * 100 / allData.length - 1 * 100) * -1).toFixed(2)}%</span>)<br>
-    Current win streak: <span class="highlight">${user.winStreak}&nbsp;${winStreakEmoji}</span><br>
+    Current win streak: <span class="highlight">${Number(user.winStreak)}&nbsp;${winStreakEmoji}</span><br>
     `;
 
     document.getElementById('geoguessrProfile').innerHTML = `<a href="https://www.geoguessr.com/${user.url}" target="_blank">Geoguessr Profile</a>`;
