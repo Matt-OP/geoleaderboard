@@ -39,6 +39,13 @@ function processData(data) {
     const divisions = new Set();
     binKeys.forEach(bin => Object.keys(bins[bin]).forEach(div => divisions.add(div)));
 
+    const divisionsOrder = ["Gold III", "Gold II", "Gold I", "Master II", "Master I", "Champion"];
+    const sortedDivisions = Array.from(divisions).sort((a, b) => {
+        const indexA = divisionsOrder.indexOf(a);
+        const indexB = divisionsOrder.indexOf(b);
+        return indexA - indexB;
+    });
+
     const minBin = Math.min(...binKeys);
     const maxBin = Math.max(...binKeys);
 
@@ -47,7 +54,7 @@ function processData(data) {
         completeBinKeys.push(i);
     }
 
-    const datasets = Array.from(divisions).map(division => ({
+    const datasets = Array.from(sortedDivisions).map(division => ({
         label: division,
         data: completeBinKeys.map(bin => bins[bin]?.[division] || 0),
         backgroundColor: divisionColors[division],
