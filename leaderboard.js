@@ -155,17 +155,29 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('#leaderboard thead th')[headerIndex].classList.add(sortOrder[header] ? 'sort-asc' : 'sort-desc');
     }
 
+    function doSearch(searchValue) {
+        searchResults = allRows.filter(row => {
+                const usernameCell = row.cells[1].textContent.toLowerCase();
+                return usernameCell.includes(searchValue);
+        });
+        tableBody.innerHTML = '';
+        searchResults.forEach(row => tableBody.appendChild(row));
+    }
+
+    let searchInputUpdateDebounceTimer = null;
+    const DEBOUNCE_DELAY = 300; // This is in milliseconds.
+
     // Add event listener for the search bar
     document.getElementById('search-input').addEventListener('input', function () {
         const searchValue = this.value.toLowerCase();
         if (searchValue) {
             inSearchMode = true;
-            searchResults = allRows.filter(row => {
-                const usernameCell = row.cells[1].textContent.toLowerCase();
-                return usernameCell.includes(searchValue);
-            });
-            tableBody.innerHTML = '';
-            searchResults.forEach(row => tableBody.appendChild(row));
+            // Only run the actual search after the input has been stable for
+            // at least DEBOUNCE_DELAY milliseconds.
+            clearTimeout(searchInputUpdateDebounceTimer);
+            searchInputUpdateDebounceTimer = setTimeout(() => {
+                doSearch(searchValue);
+            }, DEBOUNCE_DELAY);
         } else {
             inSearchMode = false;
             tableBody.innerHTML = '';
