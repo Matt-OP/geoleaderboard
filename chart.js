@@ -10,11 +10,14 @@ fetch("https://media.githubusercontent.com/media/Matt-OP/geoleaderboard/refs/hea
 function processData(data) {
     const divisionColors = {};
     divisionColors["Champion"] = `rgb(77,18,154)`
-    divisionColors["Master I"] = `rgb(180,40,118)`
-    divisionColors["Master II"] = `rgb(138,79,110)`
+    divisionColors["Master I"] = `rgba(255, 0, 140, 1)`
+    divisionColors["Master II"] = `rgba(207, 0, 114, 1)`
+    divisionColors["Master III"] = `rgba(141, 0, 75, 1)`
+    divisionColors["Master IV"] = `rgba(100, 0, 53, 1)`
     divisionColors["Gold I"] = `rgb(255,255,0)`
-    divisionColors["Gold II"] = `rgb(120,120,0)`
-    divisionColors["Gold III"] = `rgb(80,80,0)`
+    divisionColors["Gold II"] = `rgba(187, 187, 0, 1)`
+    divisionColors["Gold III"] = `rgb(120,120,0)`
+    divisionColors["Gold IV"] = `rgb(80,80,0)`
 
     const bins = {};
     
@@ -39,6 +42,13 @@ function processData(data) {
     const divisions = new Set();
     binKeys.forEach(bin => Object.keys(bins[bin]).forEach(div => divisions.add(div)));
 
+    const divisionsOrder = ["Gold IV", "Gold III", "Gold II", "Gold I", "Master IV", "Master III", "Master II", "Master I", "Champion"];
+    const sortedDivisions = Array.from(divisions).sort((a, b) => {
+        const indexA = divisionsOrder.indexOf(a);
+        const indexB = divisionsOrder.indexOf(b);
+        return indexA - indexB;
+    });
+
     const minBin = Math.min(...binKeys);
     const maxBin = Math.max(...binKeys);
 
@@ -47,7 +57,7 @@ function processData(data) {
         completeBinKeys.push(i);
     }
 
-    const datasets = Array.from(divisions).map(division => ({
+    const datasets = Array.from(sortedDivisions).map(division => ({
         label: division,
         data: completeBinKeys.map(bin => bins[bin]?.[division] || 0),
         backgroundColor: divisionColors[division],
@@ -113,5 +123,3 @@ function drawChart(labels, datasets) {
         }
     });
 }
-
-
