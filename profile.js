@@ -34,6 +34,10 @@ function fetchCSVData(username, userId) {
 }
 
 function displayProfile(user, allData) {
+    // text coloring
+    const text_s = '<span class="highlight">';
+    const text_e = '</span>';
+
     // data subsets
     const numericRatings = allData.map(row => Number(row.rating)).filter(rating => !isNaN(rating));
 
@@ -91,23 +95,23 @@ function displayProfile(user, allData) {
 
     if (user.gameModeRatingsStandardduels && !isNaN(user.gameModeRatingsStandardduels)) {
         const movingEmoji = addRankEmoji(lbPositionMovingDuels);
-        leaderboardContent += `<div class="leaderboard-line">${movingEmoji}&nbsp;Moving:&nbsp;<span class="highlight">${Number(user.gameModeRatingsStandardduels)}</span>&nbsp;
-        (Rank&nbsp;<span class="highlight">${lbPositionMovingDuels}</span>&nbsp;of&nbsp;${movingDuelsRatings.length})&nbsp;
-        Top&nbsp;<span class="highlight">${(lbPositionMovingDuels / movingDuelsRatings.length * 100).toFixed(2)}%</span><br></div>`;
+        leaderboardContent += `<div class="leaderboard-line">${movingEmoji}&nbsp;Moving:&nbsp;${text_s}${Number(user.gameModeRatingsStandardduels)}${text_e}&nbsp;
+        (Rank&nbsp;${text_s}${lbPositionMovingDuels}${text_e}&nbsp;of&nbsp;${movingDuelsRatings.length})&nbsp;
+        Top&nbsp;${text_s}${(lbPositionMovingDuels / movingDuelsRatings.length * 100).toFixed(2)}%${text_e}<br></div>`;
     }
     
     if (user.gameModeRatingsNomoveduels && !isNaN(user.gameModeRatingsNomoveduels)) {
         const noMoveEmoji = addRankEmoji(lbPositionNoMoveDuels);
-        leaderboardContent += `<div class="leaderboard-line">${noMoveEmoji}&nbsp;No Move:&nbsp;<span class="highlight">${Number(user.gameModeRatingsNomoveduels)}</span>&nbsp;
-        (Rank&nbsp;<span class="highlight">${lbPositionNoMoveDuels}</span>&nbsp;of&nbsp;${noMoveDuelsRatings.length})&nbsp;
-        Top&nbsp;<span class="highlight">${(lbPositionNoMoveDuels / noMoveDuelsRatings.length * 100).toFixed(2)}%</span><br></div>`;
+        leaderboardContent += `<div class="leaderboard-line">${noMoveEmoji}&nbsp;No Move:&nbsp;${text_s}${Number(user.gameModeRatingsNomoveduels)}${text_e}&nbsp;
+        (Rank&nbsp;${text_s}${lbPositionNoMoveDuels}${text_e}&nbsp;of&nbsp;${noMoveDuelsRatings.length})&nbsp;
+        Top&nbsp;${text_s}${(lbPositionNoMoveDuels / noMoveDuelsRatings.length * 100).toFixed(2)}%${text_e}<br></div>`;
     }
     
     if (user.gameModeRatingsNmpzduels && !isNaN(user.gameModeRatingsNmpzduels)) {
         const nmpzEmoji = addRankEmoji(lbPositionNmpzDuels);
-        leaderboardContent += `<div class="leaderboard-line">${nmpzEmoji}&nbsp;NMPZ:&nbsp;<span class="highlight">${Number(user.gameModeRatingsNmpzduels)}</span>&nbsp;
-        (Rank&nbsp;<span class="highlight">${lbPositionNmpzDuels}</span>&nbsp;of&nbsp;${nmpzDuelsRatings.length})&nbsp;
-        Top&nbsp<span class="highlight">${(lbPositionNmpzDuels / nmpzDuelsRatings.length * 100).toFixed(2)}%</span><br></div>`;
+        leaderboardContent += `<div class="leaderboard-line">${nmpzEmoji}&nbsp;NMPZ:&nbsp;${text_s}${Number(user.gameModeRatingsNmpzduels)}${text_e}&nbsp;
+        (Rank&nbsp;${text_s}${lbPositionNmpzDuels}${text_e}&nbsp;of&nbsp;${nmpzDuelsRatings.length})&nbsp;
+        Top&nbsp${text_s}${(lbPositionNmpzDuels / nmpzDuelsRatings.length * 100).toFixed(2)}%${text_e}<br></div>`;
     }
     
     if (!leaderboardContent.includes("highlight")) {leaderboardContent += `No ratings to display`;}
@@ -116,32 +120,70 @@ function displayProfile(user, allData) {
     const countryEmoji = addRankEmoji(lbPositionCountry);
     const winStreakEmoji = addWinStreakEmoji(user.winStreak);
 
+    const latestGames = JSON.parse(
+        user.latestGames
+            .replace(/True/g, "true")
+            .replace(/False/g, "false")
+    );
+
+    let latestGamesString = '(most recent)&nbsp;';
+    
+    for (let i = 0; i < latestGames.length; i++) {
+        if (latestGames[i] === true) {
+            latestGamesString += '🟩';
+        }
+        else {
+            latestGamesString += '🟥';
+        }
+    }
+
+    async function getCountryNames(user) {
+        const res = await fetch("country_dict.json");
+        const countryDict = await res.json();
+
+        const bestCountries = JSON.parse(user.bestCountries.replace(/'/g, '"'));
+        const worstCountries = JSON.parse(user.worstCountries.replace(/'/g, '"'));
+
+        return {
+            best: bestCountries.map(c => countryDict[c]),
+            worst: worstCountries.map(c => countryDict[c])
+        };
+    }
+
     // documents
     document.title = `${user.nick} Profile`
     document.getElementById('username').textContent = `${user.nick}`;
     document.getElementById('userLevelAndCreationDate').innerHTML = `
-    <span class="highlight">(${user.lifeTimeXpProgressionCurrenttitleName}, Level ${user.lifeTimeXpProgressionCurrentlevelLevel})</span><br>
-    Account created: ${user.created}<br>
+    Account created: ${text_s}${user.created}${text_e}<br>
+    ${text_s}${user.lifeTimeXpProgressionCurrenttitleName}${text_e}
+    (Level ${text_s}${user.lifeTimeXpProgressionCurrentlevelLevel}${text_e})<br>
     `;
 
-    document.getElementById('userInfo').innerHTML = `
-    ⭐&nbsp;Total Duel Statistics&nbsp;⭐<br><br>
-    Games played: <span class="highlight">${user.duelsTotalNumgamesplayed}</span><br>
-    Win percentage: <span class="highlight">${user.duelsTotalWinratio}%</span><br>
-    Flawless wins: <span class="highlight">${user.duelsTotalNumflawlesswins}</span> (<span class="highlight">${(user.duelsTotalNumflawlesswins / user.duelsTotalNumgamesplayed * 100).toFixed(2)}%</span> of games)<br><br>
-    Number of guesses: <span class="highlight">${user.duelsTotalNumguesses}</span><br>
-    Number of perfect rounds: <span class="highlight">${user.perfectRounds}</span> (<span class="highlight">${(user.perfectRounds / user.duelsTotalNumguesses * 100).toFixed(2)}%</span> of rounds)<br><br>
-    Guessed first rate: <span class="highlight">${(user.guessedFirstRate * 100).toFixed(2)}%</span> (Faster than <span class="highlight">${((lbPositionGuessedFirstRate * 100 / allData.length - 1 * 100) * -1).toFixed(2)}%</span>)<br>
-    Current win streak: <span class="highlight">${Number(user.winStreak)}&nbsp;${winStreakEmoji}</span><br>
-    `;
+    getCountryNames(user).then(result => {
+        document.getElementById('userInfo').innerHTML = `
+        ⭐&nbsp;Duel Statistics&nbsp;⭐<br><br>
+        Total games played: ${text_s}${user.duelsTotalNumgamesplayed}${text_e} (${text_s}${user.duelsTotalWinratio}%${text_e} Winrate)<br>
+        Flawless wins: ${text_s}${user.duelsTotalNumflawlesswins}${text_e} (${text_s}${(user.duelsTotalNumflawlesswins / user.duelsTotalNumgamesplayed * 100).toFixed(2)}%${text_e} of games)<br><br>
+        Total number of guesses: ${text_s}${user.duelsTotalNumguesses}${text_e}<br>
+        Guessed first rate: ${text_s}${(user.guessedFirstRate * 100).toFixed(2)}%${text_e} (Faster than ${text_s}${((lbPositionGuessedFirstRate * 100 / allData.length - 1 * 100) * -1).toFixed(2)}%${text_e})<br><br>
+        ⭐ Games Played by Game Mode ⭐<br><br>
+        Moving: ${text_s}${user.duelsNumgamesplayed}${text_e} (${text_s}${user.duelsWinratio}%${text_e} Winrate)<br>
+        No Move: ${text_s}${user.duelsNoMoveNumgamesplayed}${text_e} (${text_s}${user.duelsNoMoveWinratio}%${text_e} Winrate)<br>
+        NMPZ: ${text_s}${user.duelsNmpzNumgamesplayed}${text_e} (${text_s}${user.duelsNmpzWinratio}%${text_e} Winrate)<br><br>
+        Current win streak: ${text_s}${Number(user.winStreak)}&nbsp;${winStreakEmoji}${text_e}<br><br>
+        Win/loss last 10 games:<br>${latestGamesString}<br><br>
+        Best countries:<br>${text_s}${result.best[0]}, ${result.best[1]}, ${result.best[2]}${text_e}<br><br>
+        Worst countries:<br>${text_s}${result.worst[0]}, ${result.worst[1]}, ${result.worst[2]}${text_e}
+        `;
+    });
 
     document.getElementById('geoguessrProfile').innerHTML = `<a href="https://www.geoguessr.com/${user.url}" target="_blank">Geoguessr Profile</a>`;
     document.getElementById('profileImage').src = `./geoguessr_profile_pictures/${user.pinUrl.replace(/^pin\//, '')}`;
     document.getElementById('divisionImage').src = `./division_icons/${user.divisionName}.webp`;
     document.getElementById('leaderboardPosition').innerHTML = `
-        <div class="leaderboard-line">${globalEmoji}&nbsp;Rating:&nbsp;<span class="highlight">${Number(user.rating)}</span>&nbsp;(${user.divisionName})</div>
-        <div class="leaderboard-line">${globalEmoji}&nbsp;Global Rank&nbsp;<span class="highlight">${Number(user.positionDuelsLeaderboard)}</span>&nbsp;of&nbsp;${allData.length - 1}</div>
-        <div class="leaderboard-line">${countryEmoji}&nbsp;Rank&nbsp;<span class="highlight">${lbPositionCountry}</span>&nbsp;of&nbsp;${countryPlayers.length}&nbsp;(${user.countryCode})</div>
+        <div class="leaderboard-line">${globalEmoji}&nbsp;Rating:&nbsp;${text_s}${Number(user.rating)}${text_e}&nbsp;(${user.divisionName})</div>
+        <div class="leaderboard-line">${globalEmoji}&nbsp;Global Rank&nbsp;${text_s}${Number(user.positionDuelsLeaderboard)}${text_e}&nbsp;of&nbsp;${allData.length - 1}</div>
+        <div class="leaderboard-line">${countryEmoji}&nbsp;Rank&nbsp;${text_s}${lbPositionCountry}${text_e}&nbsp;of&nbsp;${countryPlayers.length}&nbsp;(${user.countryCode})</div>
     `;
 
     document.getElementById('leaderboardGamemodePosition').innerHTML = leaderboardContent;
